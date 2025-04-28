@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cowboy Faucet 🤠</title>
+</head>
+<body style="text-align:center; padding-top:100px;">
+
+    <h1>🤠 Get Free COW Token!</h1>
+    <button onclick="requestTokens()" style="padding: 10px 20px; font-size: 20px;">Get Free COW</button>
+
+    <p id="status" style="margin-top: 20px;"></p>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script>
+        const faucetAddress = "0x9BEfBabCF395C13321fd52C74ABF1d78e29F7109"; // <-- BURAYA KENDİ Faucet Adresini Yaz!
+        const faucetAbi = [
+            {
+                "inputs": [],
+                "name": "requestTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        async function requestTokens() {
+            if (typeof window.ethereum !== 'undefined') {
+                const web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(faucetAbi, faucetAddress);
+                
+                document.getElementById("status").innerText = "Requesting tokens...";
+                try {
+                    await contract.methods.requestTokens().send({ from: accounts[0] });
+                    document.getElementById("status").innerText = "✅ Tokens sent successfully!";
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById("status").innerText = "❌ Transaction failed.";
+                }
+            } else {
+                alert("Please install MetaMask!");
+            }
+        }
+    </script>
+
+</body>
+</html>
